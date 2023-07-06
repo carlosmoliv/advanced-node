@@ -16,7 +16,7 @@ export namespace LoadUserAccountRepository {
 }
 
 export interface SaveFaceboookAccountRepository {
-  saveWithFacebook: (params: SaveFaceboookAccountRepository.Params) => Promise<void>
+  saveWithFacebook: (params: SaveFaceboookAccountRepository.Params) => Promise<SaveFaceboookAccountRepository.Result>
 }
 
 export namespace SaveFaceboookAccountRepository {
@@ -25,5 +25,9 @@ export namespace SaveFaceboookAccountRepository {
     email: string
     name: string
     facebookId: string
+  }
+
+  export type Result = {
+    id: string
   }
 }
