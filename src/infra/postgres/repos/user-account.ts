@@ -6,8 +6,9 @@ import { getRepository } from 'typeorm'
 type LoadParams = LoadUserAccountRepository.Params
 type LoadResult = LoadUserAccountRepository.Result
 type SaveParams = SaveFaceboookAccountRepository.Params
+type SaveResult = SaveFaceboookAccountRepository.Result
 
-export class PgUserAccountRepository implements LoadUserAccountRepository {
+export class PgUserAccountRepository implements LoadUserAccountRepository, SaveFaceboookAccountRepository {
   private readonly pgUserRepo = getRepository(PgUser)
 
   async load(params: LoadParams): Promise<LoadResult> {
@@ -21,14 +22,20 @@ export class PgUserAccountRepository implements LoadUserAccountRepository {
     )
   }
 
-  async saveWithFacebook(params: SaveParams): Promise<void> {
+  async saveWithFacebook(params: SaveParams): Promise<SaveResult> {
+    let id: string
+
     if (params.id === undefined) {
-      await this.pgUserRepo.save({
+      const pgUser = await this.pgUserRepo.save({
         name: params.name,
         email: params.email,
         facebookId: params.facebookId,
       })
+
+      id = pgUser.id.toString()
     } else {
+      id = params.id
+
       await this.pgUserRepo.update(
         { id: parseInt(params.id) },
         {
@@ -37,5 +44,7 @@ export class PgUserAccountRepository implements LoadUserAccountRepository {
         }
       )
     }
+
+    return { id }
   }
 }
