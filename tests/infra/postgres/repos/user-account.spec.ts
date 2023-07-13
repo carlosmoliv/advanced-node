@@ -6,26 +6,26 @@ import { IBackup } from 'pg-mem'
 import { Repository, getConnection, getRepository } from 'typeorm'
 
 describe('PgUseraAccountRepository', () => {
+  let sut: PgUserAccountRepository
+  let pgUserRepo: Repository<PgUser>
+  let backup: IBackup
+
+  beforeAll(async () => {
+    const db = await makeFakeDb([PgUser])
+    backup = db.backup()
+    pgUserRepo = getRepository(PgUser)
+  })
+
+  afterAll(async () => {
+    await getConnection().close()
+  })
+
+  beforeEach(() => {
+    backup.restore()
+    sut = new PgUserAccountRepository()
+  })
+
   describe('load()', () => {
-    let sut: PgUserAccountRepository
-    let pgUserRepo: Repository<PgUser>
-    let backup: IBackup
-
-    beforeAll(async () => {
-      const db = await makeFakeDb([PgUser])
-      backup = db.backup()
-      pgUserRepo = getRepository(PgUser)
-    })
-
-    beforeEach(() => {
-      backup.restore()
-      sut = new PgUserAccountRepository()
-    })
-
-    afterAll(async () => {
-      await getConnection().close()
-    })
-
     it('should return an account if email exists', async () => {
       await pgUserRepo.save({ email: 'any_email' })
 
@@ -35,11 +35,23 @@ describe('PgUseraAccountRepository', () => {
     })
 
     it('should return an undefined if email does not exists', async () => {
-      const sut = new PgUserAccountRepository()
-
       const account = await sut.load({ email: 'any_email' })
 
       expect(account).toBeUndefined()
+    })
+  })
+
+  describe('saveWithFacebook()', () => {
+    it('should create an account if id is undefined', async () => {
+      await sut.saveWithFacebook({
+        name: 'any_name',
+        email: 'any_email',
+        facebookId: 'any_fb_id',
+      })
+
+      const pgUser = await pgUserRepo.findOne({ email: 'any_email' })
+
+      expect(pgUser?.id).toBe(1)
     })
   })
 })
