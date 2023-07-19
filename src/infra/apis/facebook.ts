@@ -1,5 +1,5 @@
-import { LoadFacebookUserApi } from '@/data/contracts/apis'
-import { HttpGetClient } from '../http'
+import { type LoadFacebookUserApi } from '@/data/contracts/apis'
+import { type HttpGetClient } from '@/infra/http'
 
 type AppToken = {
   access_token: string
@@ -26,14 +26,12 @@ export class FacebookApi implements LoadFacebookUserApi {
     private readonly clientSecret: string
   ) {}
 
-  async loadUser(params: LoadFacebookUserApi.Params): Promise<LoadFacebookUserApi.Result> {
-    const userInfo = await this.getUserInfo(params.token)
-
-    return {
-      facebookId: userInfo.id,
-      name: userInfo.name,
-      email: userInfo.email,
-    }
+  async loadUser(
+    params: LoadFacebookUserApi.Params
+  ): Promise<LoadFacebookUserApi.Result> {
+    return this.getUserInfo(params.token)
+      .then(({ id, name, email }) => ({ facebookId: id, name, email }))
+      .catch(() => undefined)
   }
 
   private async getAppToken(): Promise<AppToken> {
@@ -42,8 +40,8 @@ export class FacebookApi implements LoadFacebookUserApi {
       params: {
         client_id: this.clientId,
         client_secret: this.clientSecret,
-        grant_type: 'client_credentials',
-      },
+        grant_type: 'client_credentials'
+      }
     })
   }
 
@@ -54,8 +52,8 @@ export class FacebookApi implements LoadFacebookUserApi {
       url: `${this.baseUrl}/debug_token`,
       params: {
         access_token: appToken.access_token,
-        input_token: clientToken,
-      },
+        input_token: clientToken
+      }
     })
   }
 
@@ -66,8 +64,8 @@ export class FacebookApi implements LoadFacebookUserApi {
       url: `${this.baseUrl}/${debugToken.data.user_id}`,
       params: {
         fields: 'id,name,email',
-        access_token: clientToken,
-      },
+        access_token: clientToken
+      }
     })
   }
 }
