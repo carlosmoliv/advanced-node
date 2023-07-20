@@ -8,5 +8,6 @@ export const env = {
       facebookUserId: process.env.FACEBOOK_USER_ID ?? '',
       token: process.env.FACEBOOK_USER_TOKEN ?? ''
     }
-  }
+  },
+  port: process.env.APP_PORT ?? 8080
 }
