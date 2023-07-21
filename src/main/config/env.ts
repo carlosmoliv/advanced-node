@@ -9,5 +9,6 @@ export const env = {
       token: process.env.FACEBOOK_USER_TOKEN ?? ''
     }
   },
-  port: process.env.APP_PORT ?? 8080
+  port: process.env.APP_PORT ?? 8080,
+  jwtSecret: process.env.JWT_SECRET ?? 'shhhhhh'
 }
