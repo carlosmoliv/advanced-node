@@ -4,14 +4,11 @@ import { type Response, type Request } from 'express'
 
 export const adaptExpressRoute = (controller: Controller) => {
   return async (req: Request, res: Response) => {
-    const httpResponse = await controller.handle({ ...req.body })
+    const { data, statusCode } = await controller.handle({ ...req.body })
 
-    if (httpResponse.statusCode >= 200 && httpResponse.statusCode <= 299) {
-      res.status(200).json(httpResponse.data)
-    } else {
-      res
-        .status(httpResponse.statusCode)
-        .json({ error: httpResponse.data.message })
-    }
+    const json =
+      statusCode >= 200 && statusCode <= 299 ? data : { error: data.message }
+
+    res.status(statusCode).json(json)
   }
 }
