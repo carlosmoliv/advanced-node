@@ -1,10 +1,10 @@
 import { AuthenticationError } from '@/domain/errors'
 import { type FacebookAuthentication } from '@/domain/features'
-import { type LoadFacebookUserApi } from '@/data/contracts/apis'
+import { type LoadFacebookUserApi } from '@/domain/contracts/apis'
 import {
   type LoadUserAccountRepository,
   type SaveFaceboookAccountRepository
-} from '@/data/contracts/repos'
+} from '@/domain/contracts/repos'
 import { AccessToken, FacebookAccount } from '@/domain/models'
 import { type TokenGenerator } from '../contracts/crypto'
 
