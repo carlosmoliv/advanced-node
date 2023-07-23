@@ -1,5 +1,4 @@
 import { AuthenticationError } from '@/domain/entities/errors'
-import { type FacebookAuthentication } from '@/domain/features'
 import { type LoadFacebookUserApi } from '@/domain/contracts/apis'
 import {
   type LoadUserAccountRepository,
@@ -8,27 +7,28 @@ import {
 import { AccessToken, FacebookAccount } from '@/domain/entities'
 import { type TokenGenerator } from '@/domain/contracts/crypto'
 
-export class FacebookAuthenticationUseCase implements FacebookAuthentication {
-  constructor(
-    private readonly facebookApi: LoadFacebookUserApi,
-    private readonly userAccountRepo: LoadUserAccountRepository &
-      SaveFaceboookAccountRepository,
-    private readonly crypto: TokenGenerator
-  ) {}
+type Setup = (
+  facebookApi: LoadFacebookUserApi,
+  userAccountRepo: LoadUserAccountRepository & SaveFaceboookAccountRepository,
+  crypto: TokenGenerator
+) => FacebookAuthentication
 
-  async perform(
-    params: FacebookAuthentication.Params
-  ): Promise<FacebookAuthentication.Result> {
-    const fbData = await this.facebookApi.loadUser(params)
+export type FacebookAuthentication = (params: {
+  token: string
+}) => Promise<AccessToken | AuthenticationError>
+
+export const setupFacebookAuthentication: Setup =
+  (facebookApi, userAccountRepo, crypto) => async (params) => {
+    const fbData = await facebookApi.loadUser(params)
 
     if (fbData !== undefined) {
-      const accountData = await this.userAccountRepo.load({
+      const accountData = await userAccountRepo.load({
         email: fbData.email
       })
       const fbAccount = new FacebookAccount(fbData, accountData)
 
-      const { id } = await this.userAccountRepo.saveWithFacebook(fbAccount)
-      const token = await this.crypto.generateToken({
+      const { id } = await userAccountRepo.saveWithFacebook(fbAccount)
+      const token = await crypto.generateToken({
         key: id,
         expirationInMs: AccessToken.expirationInMs
       })
@@ -38,4 +38,3 @@ export class FacebookAuthenticationUseCase implements FacebookAuthentication {
 
     return new AuthenticationError()
   }
-}
