@@ -3,5 +3,5 @@ import { type Router } from 'express'
 import { makeFacebookLoginController } from '@/main/factories/controllers'
 
 export default (router: Router): void => {
-  router.post('/api/login/facebook', adapt(makeFacebookLoginController()))
+  router.post('/login/facebook', adapt(makeFacebookLoginController()))
 }
