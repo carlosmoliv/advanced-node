@@ -1,7 +1,7 @@
 import {
   badRequest,
   type HttpResponse,
-  serverError,
+  serverError
 } from '@/application/helpers'
 import { ValidationComposite, type Validator } from '@/application/validation'
 

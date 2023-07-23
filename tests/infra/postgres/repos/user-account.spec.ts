@@ -2,8 +2,8 @@ import { PgUser } from '@/infra/postgres/entities'
 import { PgUserAccountRepository } from '@/infra/postgres/repos/user-account'
 import { makeFakeDb } from '@/tests/infra/postgres/mocks'
 
-import { IBackup } from 'pg-mem'
-import { Repository, getConnection, getRepository } from 'typeorm'
+import { type IBackup } from 'pg-mem'
+import { type Repository, getConnection, getRepository } from 'typeorm'
 
 describe('PgUseraAccountRepository', () => {
   let sut: PgUserAccountRepository
@@ -46,7 +46,7 @@ describe('PgUseraAccountRepository', () => {
       const { id } = await sut.saveWithFacebook({
         email: 'any_email',
         name: 'any_name',
-        facebookId: 'any_fb_id',
+        facebookId: 'any_fb_id'
       })
 
       const pgUser = await pgUserRepo.findOne({ email: 'any_email' })
@@ -59,14 +59,14 @@ describe('PgUseraAccountRepository', () => {
       await pgUserRepo.save({
         name: 'any_name',
         email: 'any_email',
-        facebookId: 'any_fb_id',
+        facebookId: 'any_fb_id'
       })
 
       const { id } = await sut.saveWithFacebook({
         id: '1',
         email: 'new_email',
         name: 'new_name',
-        facebookId: 'new_fb_id',
+        facebookId: 'new_fb_id'
       })
 
       const pgUser = await pgUserRepo.findOne({ id: 1 })
@@ -75,7 +75,7 @@ describe('PgUseraAccountRepository', () => {
         id: 1,
         email: 'any_email',
         name: 'new_name',
-        facebookId: 'new_fb_id',
+        facebookId: 'new_fb_id'
       })
       expect(id).toBe('1')
     })
