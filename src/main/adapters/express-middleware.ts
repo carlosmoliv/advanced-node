@@ -14,5 +14,5 @@ export const adaptExpressMiddleware =
       next()
     }
 
-    return res.status(statusCode).json(data)
+    return res.status(statusCode).json({ error: data.message })
   }
