@@ -1,18 +1,18 @@
 import {
-  type LoadUserAccountRepository,
-  type SaveFaceboookAccountRepository
+  type LoadUserAccount,
+  type SaveFaceboookAccount
 } from '@/domain/contracts/repos'
 import { PgUser } from '@/infra/postgres/entities'
 
 import { getRepository } from 'typeorm'
 
-type LoadParams = LoadUserAccountRepository.Params
-type LoadResult = LoadUserAccountRepository.Result
-type SaveParams = SaveFaceboookAccountRepository.Params
-type SaveResult = SaveFaceboookAccountRepository.Result
+type LoadParams = LoadUserAccount.Params
+type LoadResult = LoadUserAccount.Result
+type SaveParams = SaveFaceboookAccount.Params
+type SaveResult = SaveFaceboookAccount.Result
 
 export class PgUserAccountRepository
-  implements LoadUserAccountRepository, SaveFaceboookAccountRepository
+  implements LoadUserAccount, SaveFaceboookAccount
 {
   async load({ email }: LoadParams): Promise<LoadResult> {
     const pgUserRepo = getRepository(PgUser)
