@@ -16,7 +16,7 @@ describe('ExpressMiddleware', () => {
     req: Request<ParamsDictionary, any, any, ParsedQs>,
     res: Response,
     next: NextFunction
-  ) => Promise<Response<any, Record<string, any>>>
+  ) => Promise<void>
 
   beforeAll(() => {
     req = getMockReq({ headers: { any: 'any' } })
