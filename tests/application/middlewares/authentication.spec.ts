@@ -24,6 +24,15 @@ class AuthenticationMiddleware {
       return forbidden()
     }
   }
+
+  private validate({ authorization }: HttpRequest): boolean {
+    const error = new RequiredStringValidator(
+      authorization,
+      'authorization'
+    ).validate()
+
+    return error === undefined
+  }
 }
 
 describe('AuthenticationMiddleware', () => {
