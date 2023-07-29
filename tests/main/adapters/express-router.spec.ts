@@ -18,7 +18,7 @@ describe('ExpressRouter', () => {
     next: NextFunction
   ) => Promise<void>
 
-  beforeEach(() => {
+  beforeAll(() => {
     req = getMockReq({ body: { any: 'any' } })
     res = getMockRes().res
     next = getMockRes().next
@@ -27,7 +27,9 @@ describe('ExpressRouter', () => {
       statusCode: 200,
       data: { data: 'any_data' }
     })
+  })
 
+  beforeEach(() => {
     sut = adaptExpressRoute(controller)
   })
 

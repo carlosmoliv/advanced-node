@@ -1,7 +1,9 @@
 import { type HttpResponse } from '@/application/helpers'
 
 import { getMockReq, getMockRes } from '@jest-mock/express'
-import { mock } from 'jest-mock-extended'
+import { type ParsedQs } from 'qs'
+import { type MockProxy, mock } from 'jest-mock-extended'
+import { type ParamsDictionary } from 'express-serve-static-core'
 import { type Request, type Response, type NextFunction } from 'express'
 
 const adaptExpressMiddleware =
@@ -15,13 +17,28 @@ interface Middleware {
 }
 
 describe('ExpressMiddleware', () => {
-  it('should call handle with correct request', async () => {
-    const req = getMockReq({ headers: { any: 'any' } })
-    const res = getMockRes().res
-    const next = getMockRes().next
-    const middleware = mock<Middleware>()
-    const sut = adaptExpressMiddleware(middleware)
+  let req: Request
+  let res: Response
+  let next: NextFunction
+  let middleware: MockProxy<Middleware>
+  let sut: (
+    req: Request<ParamsDictionary, any, any, ParsedQs>,
+    res: Response,
+    next: NextFunction
+  ) => Promise<void>
 
+  beforeAll(() => {
+    req = getMockReq({ headers: { any: 'any' } })
+    res = getMockRes().res
+    next = getMockRes().next
+    middleware = mock<Middleware>()
+  })
+
+  beforeEach(() => {
+    sut = adaptExpressMiddleware(middleware)
+  })
+
+  it('should call handle with correct request', async () => {
     await sut(req, res, next)
 
     expect(middleware.handle).toHaveBeenCalledWith({ any: 'any' })
@@ -29,11 +46,7 @@ describe('ExpressMiddleware', () => {
   })
 
   it('should call handle with correct request', async () => {
-    const req = getMockReq({})
-    const res = getMockRes().res
-    const next = getMockRes().next
-    const middleware = mock<Middleware>()
-    const sut = adaptExpressMiddleware(middleware)
+    req = getMockReq({})
 
     await sut(req, res, next)
 
