@@ -9,7 +9,8 @@ import { type Request, type Response, type NextFunction } from 'express'
 const adaptExpressMiddleware =
   (middleware: Middleware) =>
   async (req: Request, res: Response, next: NextFunction) => {
-    await middleware.handle({ ...req.headers })
+    const { statusCode, data } = await middleware.handle({ ...req.headers })
+    return res.status(statusCode).json(data)
   }
 
 interface Middleware {
@@ -25,13 +26,17 @@ describe('ExpressMiddleware', () => {
     req: Request<ParamsDictionary, any, any, ParsedQs>,
     res: Response,
     next: NextFunction
-  ) => Promise<void>
+  ) => Promise<Response<any, Record<string, any>>>
 
   beforeAll(() => {
     req = getMockReq({ headers: { any: 'any' } })
     res = getMockRes().res
     next = getMockRes().next
     middleware = mock<Middleware>()
+    middleware.handle.mockResolvedValue({
+      statusCode: 500,
+      data: { error: 'any_error' }
+    })
   })
 
   beforeEach(() => {
@@ -52,5 +57,14 @@ describe('ExpressMiddleware', () => {
 
     expect(middleware.handle).toHaveBeenCalledWith({})
     expect(middleware.handle).toHaveBeenCalledTimes(1)
+  })
+
+  it('should respond with correct error and status code', async () => {
+    await sut(req, res, next)
+
+    expect(res.status).toHaveBeenCalledWith(500)
+    expect(res.status).toHaveBeenCalledTimes(1)
+    expect(res.json).toHaveBeenCalledWith({ error: 'any_error' })
+    expect(res.json).toHaveBeenCalledTimes(1)
   })
 })
