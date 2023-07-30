@@ -1,4 +1,4 @@
-import { mock } from 'jest-mock-extended'
+import { type MockProxy, mock } from 'jest-mock-extended'
 
 type Setup = (
   fileStorage: UploadFile,
@@ -31,22 +31,27 @@ namespace UUIDGenerator {
 }
 
 describe('ChangeProfilePicture', () => {
-  it('should call UploadFile with correct input', async () => {
-    // Arrange
-    const uuid = 'any_unique_id'
+  let uuid: string
+  let file: Buffer
+  let fileStorage: MockProxy<UploadFile>
+  let crypto: MockProxy<UUIDGenerator>
+  let sut: ChangeProfilePicture
 
-    const file = Buffer.from('any_buffer')
-    const fileStorage = mock<UploadFile>()
-
-    const crypto = mock<UUIDGenerator>()
+  beforeAll(() => {
+    uuid = 'any_unique_id'
+    file = Buffer.from('any_buffer')
+    fileStorage = mock<UploadFile>()
+    crypto = mock<UUIDGenerator>()
     crypto.uuid.mockReturnValue(uuid)
+  })
 
-    const sut = setupChangeProfilePicture(fileStorage, crypto)
+  beforeEach(() => {
+    sut = setupChangeProfilePicture(fileStorage, crypto)
+  })
 
-    // Act
+  it('should call UploadFile with correct input', async () => {
     await sut({ id: 'any_id', file: Buffer.from('any_buffer') })
 
-    // Assert
     expect(fileStorage.upload).toHaveBeenCalledWith({ file, key: uuid })
     expect(fileStorage.upload).toHaveBeenCalledTimes(1)
   })
