@@ -11,6 +11,9 @@ import {
   type LoadUserProfile,
   type SaveUserPicture
 } from '@/domain/contracts/repos'
+import { UserProfile } from '@/domain/entities'
+
+jest.mock('@/domain/entities/user-profile')
 
 describe('ChangeProfilePicture', () => {
   let uuid: string
@@ -53,76 +56,9 @@ describe('ChangeProfilePicture', () => {
   it('should call SaveUserPicture with correct input', async () => {
     await sut({ id: 'any_id', file })
 
-    expect(userProfileRepo.savePicture).toHaveBeenCalledWith({
-      pictureUrl: 'any_url',
-      innitials: undefined
-    })
-    expect(userProfileRepo.savePicture).toHaveBeenCalledTimes(1)
-  })
-
-  it('should not call SaveUserPicture with correct input when file is undefined', async () => {
-    await sut({ id: 'any_id', file: undefined })
-
-    expect(userProfileRepo.savePicture).toHaveBeenCalledWith({
-      pictureUrl: undefined,
-      initials: 'CO'
-    })
-    expect(userProfileRepo.savePicture).toHaveBeenCalledTimes(1)
-  })
-
-  it('should not call SaveUserPicture with correct input when file is undefined', async () => {
-    userProfileRepo.load.mockResolvedValueOnce({
-      name: 'carlos vinicius m. oliveira'
-    })
-
-    await sut({ id: 'any_id', file: undefined })
-
-    expect(userProfileRepo.savePicture).toHaveBeenCalledWith({
-      pictureUrl: undefined,
-      initials: 'CO'
-    })
-    expect(userProfileRepo.savePicture).toHaveBeenCalledTimes(1)
-  })
-
-  it('should not call SaveUserPicture with correct input when file is undefined', async () => {
-    userProfileRepo.load.mockResolvedValueOnce({
-      name: 'carlos'
-    })
-
-    await sut({ id: 'any_id', file: undefined })
-
-    expect(userProfileRepo.savePicture).toHaveBeenCalledWith({
-      pictureUrl: undefined,
-      initials: 'CA'
-    })
-    expect(userProfileRepo.savePicture).toHaveBeenCalledTimes(1)
-  })
-
-  it('should not call SaveUserPicture with correct input when file is undefined', async () => {
-    userProfileRepo.load.mockResolvedValueOnce({
-      name: 'c'
-    })
-
-    await sut({ id: 'any_id', file: undefined })
-
-    expect(userProfileRepo.savePicture).toHaveBeenCalledWith({
-      pictureUrl: undefined,
-      initials: 'C'
-    })
-    expect(userProfileRepo.savePicture).toHaveBeenCalledTimes(1)
-  })
-
-  it('should not call SaveUserPicture with correct input when file is undefined', async () => {
-    userProfileRepo.load.mockResolvedValueOnce({
-      name: undefined
-    })
-
-    await sut({ id: 'any_id', file: undefined })
-
-    expect(userProfileRepo.savePicture).toHaveBeenCalledWith({
-      pictureUrl: undefined,
-      initials: undefined
-    })
+    expect(userProfileRepo.savePicture).toHaveBeenCalledWith(
+      ...jest.mocked(UserProfile).mock.instances
+    )
     expect(userProfileRepo.savePicture).toHaveBeenCalledTimes(1)
   })
 
