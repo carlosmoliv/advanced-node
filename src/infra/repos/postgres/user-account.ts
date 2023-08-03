@@ -2,7 +2,7 @@ import {
   type LoadUserAccount,
   type SaveFaceboookAccount
 } from '@/domain/contracts/repos'
-import { PgUser } from '@/infra/postgres/entities'
+import { PgUser } from '@/infra/repos/postgres/entities'
 
 import { getRepository } from 'typeorm'
 
@@ -12,9 +12,8 @@ type SaveParams = SaveFaceboookAccount.Params
 type SaveResult = SaveFaceboookAccount.Result
 
 export class PgUserAccountRepository
-  implements LoadUserAccount, SaveFaceboookAccount
-{
-  async load({ email }: LoadParams): Promise<LoadResult> {
+implements LoadUserAccount, SaveFaceboookAccount {
+  async load ({ email }: LoadParams): Promise<LoadResult> {
     const pgUserRepo = getRepository(PgUser)
     const pgUser = await pgUserRepo.findOne({ email })
 
@@ -26,7 +25,7 @@ export class PgUserAccountRepository
     }
   }
 
-  async saveWithFacebook({
+  async saveWithFacebook ({
     email,
     facebookId,
     name,

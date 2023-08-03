@@ -5,9 +5,9 @@ import {
 import { type JwtPayload, sign, verify } from 'jsonwebtoken'
 
 export class JwtTokenHandler implements TokenGenerator, TokenValidator {
-  constructor(private readonly secret: string) {}
+  constructor (private readonly secret: string) {}
 
-  async generate({
+  async generate ({
     expirationInMs,
     key
   }: TokenGenerator.Params): Promise<TokenGenerator.Result> {
@@ -15,7 +15,7 @@ export class JwtTokenHandler implements TokenGenerator, TokenValidator {
     return sign({ key }, this.secret, { expiresIn: expirationInSeconds })
   }
 
-  async validate({
+  async validate ({
     token
   }: TokenValidator.Params): Promise<TokenValidator.Result> {
     const payload = verify(token, this.secret) as JwtPayload
