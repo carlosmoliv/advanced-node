@@ -1,36 +1,5 @@
-import { RequiredFieldError } from '@/application/errors'
-import { badRequest, ok, type HttpResponse } from '@/application/helpers'
-import { type ChangeProfilePicture } from '@/domain/use-cases'
-
-type HttpRequest = { file: { buffer: Buffer, mimeType: string }, userId: string }
-type Model = Error | { initials?: string, pictureUrl?: string }
-
-class SavePictureController {
-  constructor (private readonly changeProfilePicture: ChangeProfilePicture) {}
-
-  async handle ({ file, userId }: HttpRequest): Promise<HttpResponse<Model>> {
-    if (file === undefined || file === null) return badRequest(new RequiredFieldError('file'))
-    if (file.buffer.length === 0) return badRequest(new RequiredFieldError('file'))
-    if (!['image/png', 'image/jpeg', 'image/jpg'].includes(file.mimeType)) return badRequest(new InvalidMimeTypeError(['png', 'jpeg']))
-    if (file.buffer.length > 5 * 1024 * 1024) return badRequest(new MaxFileSizeError(5))
-    const data = await this.changeProfilePicture({ id: userId, file: file.buffer })
-    return ok(data)
-  }
-}
-
-class InvalidMimeTypeError extends Error {
-  constructor (allowed: string[]) {
-    super(`Unsupported file type. Only ${allowed.join(', ')} formats are allowed.`)
-    this.name = 'InvalidMimeTypeError'
-  }
-}
-
-class MaxFileSizeError extends Error {
-  constructor (sizeInMb: number) {
-    super(`File size must be equal or less than ${sizeInMb} MB`)
-    this.name = 'MaxFileSizeError'
-  }
-}
+import { InvalidMimeTypeError, MaxFileSizeError, RequiredFieldError } from '@/application/errors'
+import { SavePictureController } from '@/application/controllers'
 
 describe('SavePictureController', () => {
   let buffer: Buffer
@@ -53,6 +22,15 @@ describe('SavePictureController', () => {
 
   beforeEach(() => {
     sut = new SavePictureController(changeProfilePicture)
+  })
+
+  it('should extends 400 if file is not provided', async () => {
+    const httpResponse = await sut.handle({ file: undefined as any, userId })
+
+    expect(httpResponse).toEqual({
+      statusCode: 400,
+      data: new RequiredFieldError('file')
+    })
   })
 
   it('should return 400 if file is not provided', async () => {
