@@ -1,5 +1,5 @@
 import { InvalidMimeTypeError, MaxFileSizeError, RequiredFieldError } from '@/application/errors'
-import { SavePictureController } from '@/application/controllers'
+import { Controller, SavePictureController } from '@/application/controllers'
 
 describe('SavePictureController', () => {
   let buffer: Buffer
@@ -24,13 +24,8 @@ describe('SavePictureController', () => {
     sut = new SavePictureController(changeProfilePicture)
   })
 
-  it('should extends 400 if file is not provided', async () => {
-    const httpResponse = await sut.handle({ file: undefined as any, userId })
-
-    expect(httpResponse).toEqual({
-      statusCode: 400,
-      data: new RequiredFieldError('file')
-    })
+  it('should extend Controller', async () => {
+    expect(sut).toBeInstanceOf(Controller)
   })
 
   it('should return 400 if file is not provided', async () => {

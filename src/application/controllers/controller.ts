@@ -6,13 +6,13 @@ import {
 import { ValidationComposite, type Validator } from '@/application/validation'
 
 export abstract class Controller {
-  abstract perform(httpRequest: any): Promise<HttpResponse>
+  abstract perform (httpRequest: any): Promise<HttpResponse>
 
-  buildValidators(httpRequest: any): Validator[] {
+  buildValidators (httpRequest: any): Validator[] {
     return []
   }
 
-  async handle(httpRequest: any): Promise<HttpResponse> {
+  async handle (httpRequest: any): Promise<HttpResponse> {
     const error = this.validate(httpRequest)
 
     if (error !== undefined) {
@@ -26,7 +26,7 @@ export abstract class Controller {
     }
   }
 
-  private validate(httpRequest: any): Error | undefined {
+  private validate (httpRequest: any): Error | undefined {
     const validators = this.buildValidators(httpRequest)
     return new ValidationComposite(validators).validate()
   }
