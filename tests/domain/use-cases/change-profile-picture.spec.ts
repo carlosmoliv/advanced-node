@@ -19,7 +19,7 @@ jest.mock('@/domain/entities/user-profile')
 describe('ChangeProfilePicture', () => {
   let uuid: string
   let file: Buffer
-  let fileStorage: MockProxy<UploadFile & DeleteFile >
+  let fileStorage: MockProxy<UploadFile & DeleteFile>
   let crypto: MockProxy<UUIDGenerator>
   let userProfileRepo: MockProxy<SaveUserPicture & LoadUserProfile>
   let sut: ChangeProfilePicture
@@ -55,6 +55,17 @@ describe('ChangeProfilePicture', () => {
   })
 
   it('should call SaveUserPicture with correct input', async () => {
+    await sut({ id: 'any_id', file })
+
+    expect(userProfileRepo.savePicture).toHaveBeenCalledWith(
+      ...jest.mocked(UserProfile).mock.instances
+    )
+    expect(userProfileRepo.savePicture).toHaveBeenCalledTimes(1)
+  })
+
+  it('should call SaveUserPicture with correct input', async () => {
+    userProfileRepo.load.mockResolvedValueOnce(undefined)
+
     await sut({ id: 'any_id', file })
 
     expect(userProfileRepo.savePicture).toHaveBeenCalledWith(
