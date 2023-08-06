@@ -1,5 +1,5 @@
 import { forbidden, ok, type HttpResponse } from '@/application/helpers'
-import { RequiredStringValidator } from '@/application/validation'
+import { RequiredString } from '@/application/validation'
 import { type Middleware } from '@/application/middlewares'
 
 type HttpRequest = { authorization: string }
@@ -7,9 +7,9 @@ type Model = Error | { userId: string }
 type Authorize = (params: { token: string }) => Promise<string>
 
 export class AuthenticationMiddleware implements Middleware {
-  constructor(private readonly authorize: Authorize) {}
+  constructor (private readonly authorize: Authorize) {}
 
-  async handle({ authorization }: HttpRequest): Promise<HttpResponse<Model>> {
+  async handle ({ authorization }: HttpRequest): Promise<HttpResponse<Model>> {
     if (!this.validate({ authorization })) return forbidden()
 
     try {
@@ -20,8 +20,8 @@ export class AuthenticationMiddleware implements Middleware {
     }
   }
 
-  private validate({ authorization }: HttpRequest): boolean {
-    const error = new RequiredStringValidator(
+  private validate ({ authorization }: HttpRequest): boolean {
+    const error = new RequiredString(
       authorization,
       'authorization'
     ).validate()
