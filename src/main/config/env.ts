@@ -17,5 +17,11 @@ export const env = {
     username: process.env.DB_USERNAME ?? '',
     password: process.env.DB_PASSWORD ?? '',
     name: process.env.DB_NAME ?? ''
+  },
+  s3: {
+    bucket: process.env.AWS_S3_BUCKET ?? '',
+    accessKey: process.env.AWS_S3_ACCESS_KEY ?? '',
+    secretKey: process.env.AWS_S3_SECRET_KEY ?? '',
+    region: process.env.AWS_S3_REGION ?? ''
   }
 }
