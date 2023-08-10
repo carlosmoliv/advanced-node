@@ -1,5 +1,6 @@
-import { Controller, SavePictureController } from '@/application/controllers'
+import { Controller } from '@/application/controllers'
 import { AllowedMimeTypes, MaxFileSize, Required, RequiredBuffer } from '@/application/validation'
+import { SavePictureController } from '@/application/controllers/save-picture'
 
 describe('SavePictureController', () => {
   let buffer: Buffer
@@ -15,7 +16,7 @@ describe('SavePictureController', () => {
     file = { buffer, mimeType }
     changeProfilePicture = jest.fn().mockResolvedValue({
       initials: 'any_initials',
-      pictureUrl: 'any_picture_url'
+      pictureUrl: 'any_url'
     })
     userId = 'any_user_id'
   })
@@ -28,7 +29,7 @@ describe('SavePictureController', () => {
     expect(sut).toBeInstanceOf(Controller)
   })
 
-  it('shoud build Validators correctly', async () => {
+  it('shoud build Validators correctly on save', async () => {
     const validators = sut.buildValidators({ file, userId })
 
     expect(validators).toEqual([
@@ -37,6 +38,12 @@ describe('SavePictureController', () => {
       new AllowedMimeTypes(['png', 'jpg'], mimeType),
       new MaxFileSize(5, buffer)
     ])
+  })
+
+  it('shoud build Validators correctly on delete', async () => {
+    const validators = sut.buildValidators({ file: undefined, userId })
+
+    expect(validators).toEqual([])
   })
 
   it('should call ChangeProfilePicture with correct input', async () => {
@@ -51,7 +58,7 @@ describe('SavePictureController', () => {
 
     expect(httpResponse).toEqual({
       statusCode: 200,
-      data: { initials: 'any_initials', pictureUrl: 'any_picture_url' }
+      data: { initials: 'any_initials', pictureUrl: 'any_url' }
     })
   })
 })
