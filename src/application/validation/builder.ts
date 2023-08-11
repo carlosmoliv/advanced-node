@@ -19,13 +19,6 @@ export class ValidationBuilder {
     return new ValidationBuilder(value, fieldName)
   }
 
-  requiredString (): ValidationBuilder {
-    this.validators.push(
-      new RequiredString(this.value, this.fieldName)
-    )
-    return this
-  }
-
   required (): ValidationBuilder {
     if (this.value instanceof Buffer) {
       this.validators.push(new RequiredBuffer(this.value, this.fieldName))
