@@ -14,6 +14,8 @@ const adaptMulter: RequestHandler = (req, res, next) => {
     if (req.file !== undefined) {
       req.locals = { ...req.locals, file: { buffer: req.file.buffer, mimeType: req.file.mimetype } }
     }
+
+    next()
   })
 }
 
@@ -90,5 +92,20 @@ describe('MulterAdapter', () => {
         mimeType: req.file?.mimetype
       }
     })
+  })
+
+  it('should call next() on success', async () => {
+    sut(req, res, next)
+
+    expect(req.locals).toEqual({
+      anyLocals: 'any_locals',
+      file: {
+        buffer: req.file?.buffer,
+        mimeType: req.file?.mimetype
+      }
+    })
+
+    expect(next).toHaveBeenCalledWith()
+    expect(next).toHaveBeenCalledTimes(1)
   })
 })
