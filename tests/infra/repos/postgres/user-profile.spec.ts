@@ -1,28 +1,36 @@
 import { PgUser } from '@/infra/repos/postgres/entities'
 import { PgUserProfileRepository } from '@/infra/repos/postgres/user-profile'
 import { makeFakeDb } from '@/tests/infra/repos/postgres/mocks'
+import { PgRepository } from '@/infra/repos/postgres/repository'
+import { PgConnection } from '@/infra/repos/postgres/helpers'
 
 import { type IBackup } from 'pg-mem'
-import { type Repository, getConnection, getRepository } from 'typeorm'
+import { type Repository } from 'typeorm'
 
 describe('PgUseraProfileRepository', () => {
   let sut: PgUserProfileRepository
+  let connection: PgConnection
   let pgUserRepo: Repository<PgUser>
   let backup: IBackup
 
   beforeAll(async () => {
+    connection = PgConnection.getInstance()
     const db = await makeFakeDb([PgUser])
     backup = db.backup()
-    pgUserRepo = getRepository(PgUser)
+    pgUserRepo = connection.getRepository(PgUser)
   })
 
   afterAll(async () => {
-    await getConnection().close()
+    await connection.disconnect()
   })
 
   beforeEach(() => {
     backup.restore()
     sut = new PgUserProfileRepository()
+  })
+
+  it('should extend PgRepository', () => {
+    expect(sut).toBeInstanceOf(PgRepository)
   })
 
   describe('savePicture()', () => {
