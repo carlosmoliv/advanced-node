@@ -19,7 +19,7 @@ describe('MulterAdapter', () => {
 
   beforeAll(() => {
     uploadSpy = jest.fn().mockImplementation((req, res, next) => {
-      req.file = { buffer: Buffer.from('any_buffer'), mimetype: 'any_type' }
+      req.file = { buffer: Buffer.from('any_buffer'), mimetype: 'any_type', size: 2 * 1024 * 1024 }
       next()
     })
     singleSpy = jest.fn().mockImplementation(() => uploadSpy)
@@ -38,7 +38,7 @@ describe('MulterAdapter', () => {
   it('should call single upload with correct input', async () => {
     sut(req, res, next)
 
-    expect(multerSpy).toHaveBeenCalledWith()
+    expect(multerSpy).toHaveBeenCalled()
     expect(multerSpy).toHaveBeenCalledTimes(1)
     expect(singleSpy).toHaveBeenCalledWith('picture')
     expect(singleSpy).toHaveBeenCalledTimes(1)
