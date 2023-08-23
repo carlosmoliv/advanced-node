@@ -15,7 +15,7 @@ describe('UUIDHandler', () => {
     sut = new UUIDHandler()
   })
 
-  it('should vall uuid.v4', () => {
+  it('should call uuid.v4', () => {
     sut.uuid({ key: 'any_key' })
 
     expect(v4).toHaveBeenCalledTimes(1)
