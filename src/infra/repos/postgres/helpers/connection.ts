@@ -1,5 +1,6 @@
-import { createConnection, getConnectionManager, getConnection, type QueryRunner } from 'typeorm'
 import { ConnectionNotFoundError } from '@/infra/repos/postgres/helpers'
+
+import { createConnection, getConnectionManager, getConnection, type QueryRunner, type Repository, type ObjectType } from 'typeorm'
 
 export class PgConnection {
   private static instance?: PgConnection
@@ -43,5 +44,11 @@ export class PgConnection {
   async rollback (): Promise<void> {
     if (this.query === undefined) throw new ConnectionNotFoundError()
     await this.query.rollbackTransaction()
+  }
+
+  // @ts-expect-error - TypeORM types are not compatible with Flow
+  getRepository<Entity> (entity: ObjectType<Entity>): Repository<Entity> {
+    if (this.query === undefined) throw new ConnectionNotFoundError()
+    return this.query.manager.getRepository(entity)
   }
 }
