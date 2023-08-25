@@ -11,11 +11,15 @@ class DbTransactionDecorator {
   async perform (httpRequest: any): Promise<any> {
     await this.db.openTransaction()
     await this.decoratee.perform(httpRequest)
+    await this.db.commit()
+    await this.db.closeTransaction()
   }
 }
 
 interface DbTransaction {
   openTransaction: () => Promise<void>
+  closeTransaction: () => Promise<void>
+  commit: () => Promise<void>
 }
 
 describe('DbTransactionDecorator', () => {
@@ -44,5 +48,14 @@ describe('DbTransactionDecorator', () => {
 
     expect(decoratee.perform).toHaveBeenCalledWith({ any: 'any' })
     expect(decoratee.perform).toHaveBeenCalledTimes(1)
+  })
+
+  it('should call commit and closeTransaction on success', async () => {
+    await sut.perform({ any: 'any' })
+
+    expect(db.commit).toHaveBeenCalledWith()
+    expect(db.commit).toHaveBeenCalledTimes(1)
+    expect(db.closeTransaction).toHaveBeenCalledWith()
+    expect(db.closeTransaction).toHaveBeenCalledTimes(1)
   })
 })
