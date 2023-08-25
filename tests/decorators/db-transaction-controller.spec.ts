@@ -1,15 +1,17 @@
-import { type Controller } from '@/application/controllers'
+import { Controller } from '@/application/controllers'
 import { type HttpResponse } from '@/application/helpers'
 
 import { type MockProxy, mock } from 'jest-mock-extended'
 
-class DbTransactionDecorator {
+class DbTransactionDecorator extends Controller {
   constructor (
     private readonly decoratee: Controller,
     private readonly db: DbTransaction
-  ) {}
+  ) {
+    super()
+  }
 
-  async perform (httpRequest: any): Promise<HttpResponse | undefined> {
+  async perform (httpRequest: any): Promise<HttpResponse> {
     await this.db.openTransaction()
     try {
       const httpResponse = await this.decoratee.perform(httpRequest)
@@ -44,6 +46,10 @@ describe('DbTransactionDecorator', () => {
 
   beforeEach(() => {
     sut = new DbTransactionDecorator(decoratee, db)
+  })
+
+  it('should extend Controller', async () => {
+    expect(sut).toBeInstanceOf(Controller)
   })
 
   it('should open transaction', async () => {
