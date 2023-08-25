@@ -3,7 +3,7 @@ import { Controller } from '@/application/controllers'
 import { type HttpResponse } from '@/application/helpers'
 import { type DbTransaction } from '@/application/contracts'
 
-export class DbTransactionDecorator extends Controller {
+export class DbTransactionController extends Controller {
   constructor (
     private readonly decoratee: Controller,
     private readonly db: DbTransaction

@@ -1,13 +1,13 @@
 import { type DbTransaction } from '@/application/contracts'
 import { Controller } from '@/application/controllers'
-import { DbTransactionDecorator } from '@/application/decorators'
+import { DbTransactionController } from '@/application/decorators'
 
 import { type MockProxy, mock } from 'jest-mock-extended'
 
-describe('DbTransactionDecorator', () => {
+describe('DbTransactionController', () => {
   let db: MockProxy<DbTransaction>
   let decoratee: MockProxy<Controller>
-  let sut: DbTransactionDecorator
+  let sut: DbTransactionController
 
   beforeAll(() => {
     db = mock()
@@ -16,7 +16,7 @@ describe('DbTransactionDecorator', () => {
   })
 
   beforeEach(() => {
-    sut = new DbTransactionDecorator(decoratee, db)
+    sut = new DbTransactionController(decoratee, db)
   })
 
   it('should extend Controller', async () => {
